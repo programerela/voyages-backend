@@ -27,9 +27,14 @@ namespace Voyages.Controllers
         [HttpPost("login")]
         public async Task<ActionResult> Login(UserLoginRequest request)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
+            // Check if the login request contains an email or a username
+            var user = await _userManager.FindByNameAsync(request.UserName);
 
-            if (user is null) return NotFound("User not found");
+            if (user == null)
+            {
+                // If user is not found by email or username, return NotFound
+                return NotFound("User not found");
+            }
 
             var validatePassword = await _userManager.CheckPasswordAsync(user, request.Password);
 
@@ -72,6 +77,26 @@ namespace Voyages.Controllers
                 Token = token,
                 Role = "User"
             });
+        }
+        
+        [HttpDelete("delete/{userId}")]
+        public async Task<ActionResult> DeleteUser(string userId)
+        {
+            // Find the user by userId
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            // Delete the user from the database
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest("Failed to delete user");
+            }
+
+            return Ok("User deleted successfully");
         }
     }
 }
