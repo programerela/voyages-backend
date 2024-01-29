@@ -6,6 +6,7 @@ using Voyages.Data;
 using Voyages.DTOs.Requests;
 using Voyages.DTOs.Responses;
 using Voyages.Interfaces;
+using Voyages.Services;
 
 namespace Voyages.Controllers
 {
@@ -27,12 +28,10 @@ namespace Voyages.Controllers
         [HttpPost("login")]
         public async Task<ActionResult> Login(UserLoginRequest request)
         {
-            // Check if the login request contains an email or a username
             var user = await _userManager.FindByNameAsync(request.UserName);
 
             if (user == null)
             {
-                // If user is not found by email or username, return NotFound
                 return NotFound("User not found");
             }
 

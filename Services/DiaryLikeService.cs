@@ -30,6 +30,15 @@ namespace Voyages.Services
 
         public async Task<LikedDiary?> GetDiaryLikeById(int id) =>
             await _context.LikedDiaries.Include(x => x.Diary).Include(x => x.User).Where(x => x.Id == id).FirstOrDefaultAsync();
+        public async Task<List<LikedDiary>> GetLikedDiariesByUserId(int userId)
+        {
+            return await _context.LikedDiaries
+                .Include(x => x.Diary)
+                .Include(x => x.User)
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+        }
+
 
         public async Task Update(LikedDiary likedDiary)
         {

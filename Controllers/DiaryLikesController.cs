@@ -1,10 +1,12 @@
 ﻿
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Voyages.Data;
 using Voyages.DTOs.Requests;
 using Voyages.DTOs.Responses;
 using Voyages.Interfaces;
+using Voyages.Services;
 
 namespace Voyages.Controllers
 {
@@ -21,9 +23,27 @@ namespace Voyages.Controllers
             _diaryLikeService = diaryLikeService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll() =>
-            Ok(_mapper.Map<List<LikedDiaryResponse>>(await _diaryLikeService.GetAllDiaryLikes()));
+        private string GetCurrentUserId()
+        {
+            // Retrieve the user's ID from the current ClaimsPrincipal
+            return User.FindFirstValue(ClaimTypes.NameIdentifier);
+        }
+
+        //[HttpGet]
+        //public async Task<IActionResult> GetAll() =>
+        //   Ok(_mapper.Map<List<LikedDiaryResponse>>(await _diaryLikeService.GetAllDiaryLikes()));
+
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetLikedDiariesByUser([FromRoute] int userId)
+        {
+            var likedDiaries = await _diaryLikeService.GetLikedDiariesByUserId(userId);
+
+            if (likedDiaries == null || likedDiaries.Count == 0)
+                return NotFound("No liked diaries found for the user");
+
+            return Ok(_mapper.Map<List<LikedDiaryResponse>>(likedDiaries));
+        }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
@@ -52,7 +72,8 @@ namespace Voyages.Controllers
         {
             var likedDiary = await _diaryLikeService.GetDiaryLikeById(id);
 
-            if (likedDiary is null) return NotFound("Diary not found");
+            if (likedDiary is null)
+                return NotFound("Liked diary not found");
 
             await _diaryLikeService.Delete(likedDiary);
 

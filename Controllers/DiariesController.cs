@@ -34,6 +34,17 @@ namespace Voyages.Controllers
             return Ok(_mapper.Map<DiaryResponse>(diary));
         }
 
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetDiariesByUser([FromRoute] int userId)
+        {
+            var diaries = await _diaryService.GetDiariesByUserId(userId);
+
+            if (diaries == null || diaries.Count == 0)
+                return NotFound("No diaries found for the user");
+
+            return Ok(_mapper.Map<List<DiaryResponse>>(diaries));
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateDiaryRequest request)
         {
