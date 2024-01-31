@@ -1,6 +1,7 @@
 ﻿
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using System.Security.Claims;
 using Voyages.Data;
 using Voyages.DTOs.Requests;

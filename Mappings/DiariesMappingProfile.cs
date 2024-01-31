@@ -11,7 +11,9 @@ namespace Voyages.Mappings
         {
             CreateMap<CreateDiaryRequest, Diary>();
             CreateMap<UpdateDiaryRequest, Diary>();
-            CreateMap<Diary, DiaryResponse>();
+            CreateMap<Diary, DiaryResponse>()
+                .ForMember(s => s.LikeCount, o => o.MapFrom(d => d.LikedDiaries.Count));
+            CreateMap<LikedDiary, LikedDiariesDto>();
         }
     }
 }

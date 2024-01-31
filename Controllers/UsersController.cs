@@ -25,6 +25,14 @@ namespace Voyages.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet("GetAll")]
+        public ActionResult<IEnumerable<UserResponse>> GetAllUsers()
+        {
+            var users = _userManager.Users.ToList();
+            var userResponses = _mapper.Map<List<UserResponse>>(users);
+            return Ok(userResponses);
+        }
+
         [HttpPost("login")]
         public async Task<ActionResult> Login(UserLoginRequest request)
         {
